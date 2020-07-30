@@ -53,25 +53,35 @@ export const DetailedContent = styled.div`
   background-color: #f6f6f8;
   padding-top: 10px;
   padding-left: 24px;
-  & > header > h3 {
-    margin: 0 30px;
-    width: fit-content;
-    transition: all 0.6s ease;
-    border-bottom: 2px solid #222;
-    cursor: pointer;
+  & > header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    & > h3 {
+      margin: 0 30px;
+      width: fit-content;
+      transition: all 0.6s ease;
+      border-bottom: 2px solid #222;
+      cursor: pointer;
 
-    &:hover {
-      transform: translateY(-2px);
-      border-bottom-color: #000;
+      &:hover {
+        transform: translateY(-2px);
+        border-bottom-color: #000;
+      }
     }
   }
 `;
 
 export const TemperatureGraph = styled.div`
-  width: 80%;
+  width: 90%;
   min-height: 100px;
   margin: 40px auto;
   background-color: #fff;
+
+  & > h3 {
+    text-align: center;
+    margin: 10px 0;
+  }
 `;
 
 export const TodayHighlightsContainer = styled.div`
