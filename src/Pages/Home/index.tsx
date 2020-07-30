@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { transparentize } from "polished";
+import { useTheme } from "styled-components";
 import { Line } from "react-chartjs-2";
 import {
   FiMoon,
@@ -76,20 +78,24 @@ const Home: React.FC = () => {
     setCurrentWeatherData,
   ] = useState<ICurrentWeather | null>(null);
 
+  const theme = useTheme();
+
+  const graphLineColor = theme.isDark ? "#cc0c39" : "#4bc0c0";
+
   const data = {
     labels: graphHours,
     datasets: [
       {
         label: "Temperature",
         fill: true,
-        backgroundColor: "#4bc0c080",
+        backgroundColor: transparentize(0.6, graphLineColor),
         lineTension: 0.2,
-        borderColor: "#4BC0C0",
-        pointBorderColor: "#4BC0C0",
+        borderColor: graphLineColor,
+        pointBorderColor: graphLineColor,
         pointBackgroundColor: "#fff",
         pointBorderWidth: 1,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#2288aa",
+        pointHoverBackgroundColor: graphLineColor,
         pointHoverBorderColor: "rgba(220,220,220,1)",
         pointHoverBorderWidth: 2,
         pointRadius: 1,
@@ -100,51 +106,57 @@ const Home: React.FC = () => {
   };
 
   const loadApi = useCallback(async () => {
-    const forecastResponse = await api.get<IForecastResponse>(
-      `/forecast?q=${cityInputRef.current?.value || "London"}${
-        isCelciusSelected ? "&units=metric" : ""
-      }&appid=e874e11deb027e1d25bd2598ae20e169`
-    );
+    async function loadForecast() {
+      const forecastResponse = await api.get<IForecastResponse>(
+        `/forecast?q=${cityInputRef.current?.value || "London"}${
+          isCelciusSelected ? "&units=metric" : ""
+        }&appid=e874e11deb027e1d25bd2598ae20e169`
+      );
 
-    const temperatures = forecastResponse.data.list.map(
-      (hourData) => hourData.main.temp
-    );
+      const temperatures = forecastResponse.data.list.map(
+        (hourData) => hourData.main.temp
+      );
 
-    const hours = forecastResponse.data.list.map(
-      (hourData) => `${new Date(hourData.dt * 1000).getHours()}h`
-    );
+      const hours = forecastResponse.data.list.map(
+        (hourData) => `${new Date(hourData.dt * 1000).getHours()}h`
+      );
 
-    setGraphHours(hours);
-    setGraphTemperatures(temperatures);
-    const currentWeatherResponse = await api.get<ICurrentWeather>(
-      `/weather?q=${cityInputRef.current?.value || "London"}${
-        isCelciusSelected ? "&units=metric" : ""
-      }&appid=e874e11deb027e1d25bd2598ae20e169`
-    );
-    setCurrentWeatherData(currentWeatherResponse.data);
-    const currentDate = new Date(
-      (currentWeatherResponse.data.dt + currentWeatherResponse.data.timezone) *
-        1000
-    );
+      setGraphHours(hours);
+      setGraphTemperatures(temperatures);
+    }
+    async function loadCurrentWeather() {
+      const currentWeatherResponse = await api.get<ICurrentWeather>(
+        `/weather?q=${cityInputRef.current?.value || "London"}${
+          isCelciusSelected ? "&units=metric" : ""
+        }&appid=e874e11deb027e1d25bd2598ae20e169`
+      );
+      setCurrentWeatherData(currentWeatherResponse.data);
+      const currentDate = new Date(
+        (currentWeatherResponse.data.dt +
+          currentWeatherResponse.data.timezone) *
+          1000
+      );
 
-    const sunriseDate = new Date(
-      (currentWeatherResponse.data.sys.sunrise +
-        currentWeatherResponse.data.timezone) *
-        1000
-    );
+      const sunriseDate = new Date(
+        (currentWeatherResponse.data.sys.sunrise +
+          currentWeatherResponse.data.timezone) *
+          1000
+      );
 
-    const sunsetDate = new Date(
-      (currentWeatherResponse.data.sys.sunset +
-        currentWeatherResponse.data.timezone) *
-        1000
-    );
+      const sunsetDate = new Date(
+        (currentWeatherResponse.data.sys.sunset +
+          currentWeatherResponse.data.timezone) *
+          1000
+      );
 
-    setFormattedDates((formatted) => ({
-      ...formatted,
-      current: currentDate,
-      sunrise: sunriseDate,
-      sunset: sunsetDate,
-    }));
+      setFormattedDates((formatted) => ({
+        ...formatted,
+        current: currentDate,
+        sunrise: sunriseDate,
+        sunset: sunsetDate,
+      }));
+    }
+    await Promise.all([loadForecast(), loadCurrentWeather()]);
   }, [isCelciusSelected]);
 
   const searchCity = useCallback(
@@ -166,7 +178,7 @@ const Home: React.FC = () => {
       <WeatherFastDescription>
         <Form onSubmit={searchCity}>
           <button type="submit">
-            <FiSearch />
+            <FiSearch color={theme.text} />
           </button>
           <Input
             type="text"
@@ -185,7 +197,7 @@ const Home: React.FC = () => {
           {currentWeatherData
             ? Math.floor(currentWeatherData.main.temp)
             : "..."}
-          {isCelciusSelected ? "°C" : " F"}
+          {isCelciusSelected ? "°C" : "°F"}
         </h1>
         <h4>
           {getDayName(formattedDates.current) || "..."},{" "}

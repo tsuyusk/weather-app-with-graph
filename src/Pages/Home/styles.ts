@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { shade, transparentize } from "polished";
 
 export const Container = styled.div`
   display: flex;
@@ -38,6 +39,11 @@ export const WeatherFastDescription = styled.div`
   & > div {
     margin: 10px 0;
   }
+
+  & > strong:last-child {
+    position: absolute;
+    bottom: 10px;
+  }
 `;
 
 export const CityCard = styled.div`
@@ -50,7 +56,7 @@ export const Weak = styled.strong`
 
 export const DetailedContent = styled.div`
   flex: 1;
-  background-color: #f6f6f8;
+  background-color: ${(props) => shade(0.04, props.theme.background)};
   padding-top: 10px;
   padding-left: 24px;
   & > header {
@@ -61,12 +67,14 @@ export const DetailedContent = styled.div`
       margin: 0 30px;
       width: fit-content;
       transition: all 0.6s ease;
-      border-bottom: 2px solid #222;
+      border-bottom: 2px solid
+        ${(props) => transparentize(0.2, props.theme.text)};
       cursor: pointer;
 
       &:hover {
         transform: translateY(-2px);
-        border-bottom-color: #000;
+        border-bottom-color: ${(props) =>
+          transparentize(0.2, props.theme.text)};
       }
     }
   }
@@ -76,7 +84,7 @@ export const TemperatureGraph = styled.div`
   width: 90%;
   min-height: 100px;
   margin: 40px auto;
-  background-color: #fff;
+  background-color: ${(props) => shade(0.02, props.theme.background)};
 
   & > h3 {
     text-align: center;
@@ -92,7 +100,7 @@ export const TodayHighlightsContainer = styled.div`
   gap: 15px;
   height: 100%;
   & > div {
-    background-color: #fff;
+    background-color: ${(props) => props.theme.background};
     border-radius: 15px;
   }
 `;
@@ -103,6 +111,11 @@ export const HightlightCard = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   padding: 10px;
+  ${(props) =>
+    props.theme.isDark &&
+    css`
+      border: 1px solid #b6b6b6;
+    `}
   & > h2 {
     color: #b6b6b6;
   }
@@ -133,9 +146,15 @@ export const Form = styled.form`
   display: flex;
   align-items: center;
   border: 1px solid #ddd;
+  color: ${(props) => props.theme.text};
   border-radius: 50px;
   padding: 10px;
   margin: 10px 0;
+
+  input {
+    color: ${(props) => props.theme.text};
+  }
+
   & > button {
     margin-right: 10px;
     background: transparent;

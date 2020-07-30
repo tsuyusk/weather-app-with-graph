@@ -10,7 +10,7 @@ export const Container = styled.div`
   }
 
   & svg {
-    color: #222;
+    color: #fff;
     transition: all 0.5s ease;
     &:hover {
       cursor: pointer;
@@ -27,4 +27,5 @@ export const Container = styled.div`
 export const TextInput = styled.input`
   outline: 0;
   border: 0;
+  background: transparent;
 `;

@@ -9,6 +9,8 @@ export const GlobalCss = createGlobalStyle`
   }
   body {
     font-family: 'Roboto', sans-serif;
+    background: ${(props) => props.theme.background};
+    color: ${(props) => props.theme.text};
   }
   button {
     cursor: pointer;
